@@ -43,8 +43,10 @@ const CameraVIew = ({ setGalleryImages }) => {
 
     if (pictureCount === 4) {
       // Stop the process after 4 pictures
-      setGalleryImages(images);
+
       setCapturing(false);
+      setGalleryImages((prevImages) => [...images, ...prevImages]);
+      setImages([]);
     }
 
     return () => clearTimeout(timer); // Clean up the timer
