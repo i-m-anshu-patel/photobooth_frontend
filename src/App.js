@@ -7,14 +7,15 @@ import Gallery from './components/Gallery';
 import { useState } from 'react';
 
 function App() {
+  const [ galleryImages, setGalleryImages] = useState([]);
   return (
     <>
       <BrowserRouter>
         <Header />
         <Routes>
           <Route exact path='/' element={<Login />} />
-          <Route exact path='/gallery' element={<Gallery />} />
-          <Route exact path='/camera' element={<CameraVIew />} />
+          <Route exact path='/gallery' element={<Gallery galleryImages={galleryImages}/>} />
+          <Route exact path='/camera' element={<CameraVIew setGalleryImages={setGalleryImages}/>} />
         </Routes>
       </BrowserRouter>
     </>

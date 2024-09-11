@@ -1,9 +1,9 @@
-import React , { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Webcam from 'react-webcam';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const CameraVIew = () => {
+const CameraVIew = ({ setGalleryImages }) => {
   const webcamRef = useRef(null);
   const [countdown, setCountdown] = useState(3); // Countdown state starting from 5
   const [capturing, setCapturing] = useState(false); // Capturing status
@@ -43,6 +43,7 @@ const CameraVIew = () => {
 
     if (pictureCount === 4) {
       // Stop the process after 4 pictures
+      setGalleryImages(images);
       setCapturing(false);
     }
 
@@ -92,7 +93,7 @@ const CameraVIew = () => {
   );
 };
 
-  
+
 
 
 export default CameraVIew
