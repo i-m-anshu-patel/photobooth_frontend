@@ -5,7 +5,7 @@ import html2canvas from 'html2canvas';
 
 const CameraVIew = () => {
   const webcamRef = useRef(null);
-  const [countdown, setCountdown] = useState(5); // Countdown state starting from 5
+  const [countdown, setCountdown] = useState(3); // Countdown state starting from 5
   const [capturing, setCapturing] = useState(false); // Capturing status
   const [images, setImages] = useState([]); // Store captured images
   const [pictureCount, setPictureCount] = useState(0); // Count the number of pictures taken
@@ -25,7 +25,7 @@ const CameraVIew = () => {
     setImages([]); // Clear previous images
     setPictureCount(0); // Reset the picture count
     setCapturing(true); // Start capturing process
-    setCountdown(5); // Start countdown at 5 seconds
+    setCountdown(3); // Start countdown at 5 seconds
   };
 
   // This effect handles the countdown and capturing
@@ -38,7 +38,7 @@ const CameraVIew = () => {
       // Capture picture when countdown reaches 0
       capture();
       setPictureCount(pictureCount + 1); // Increment picture count
-      setCountdown(5); // Reset countdown to 5 for the next picture
+      setCountdown(3); // Reset countdown to 5 for the next picture
     }
 
     if (pictureCount === 4) {
@@ -58,7 +58,6 @@ const CameraVIew = () => {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={videoConstraints}
-          className="w-full h-auto object-cover rounded-lg"
         />
 
         {/* Countdown displayed over the webcam */}
@@ -82,13 +81,13 @@ const CameraVIew = () => {
       )}
 
       {/* Display Captured Images */}
-      <div className="grid grid-cols-2 gap-4 mt-4 w-full max-w-screen-lg">
+      {/* <div className="grid grid-cols-2 gap-4 mt-4 w-full max-w-screen-lg">
         {images.map((image, index) => (
           <div key={index} className="w-full h-auto rounded-lg">
             <img src={image} alt={`Captured ${index + 1}`} className="w-full h-auto rounded-lg" />
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

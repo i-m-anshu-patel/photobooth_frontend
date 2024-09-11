@@ -4,12 +4,13 @@ import CameraVIew from './components/CameraVIew';
 import Header from './components/Header';
 import Login from './components/Login';
 import Gallery from './components/Gallery';
+import { useState } from 'react';
 
 function App() {
   return (
     <>
-      <Header />
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route exact path='/' element={<Login />} />
           <Route exact path='/gallery' element={<Gallery />} />
