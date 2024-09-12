@@ -1,22 +1,122 @@
-import React from 'react'
+import React, { useState } from 'react'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 const Gallery = ({ galleryImages }) => {
+  const [selectedImages, setSelectedImages] = useState([])
+  const [isSelectMode, setIsSelectMode] = useState(false)
+  const [currentImage, setCurrentImage] = useState(null)
+
+  // Toggle image selection
+  const handleSelectImage = (image) => {
+    if (selectedImages.includes(image)) {
+      setSelectedImages(selectedImages.filter(img => img !== image))
+    } else {
+      if (selectedImages.length < 4) {
+        setSelectedImages([...selectedImages, image])
+      } else {
+        alert("You can only select up to 4 images for printing.")
+      }
+    }
+  }
+
+  // Handle clicking an image (opens modal in view mode)
+  const handleImageClick = (image) => {
+    if (isSelectMode) {
+      handleSelectImage(image)
+    } else {
+      setCurrentImage(image)
+    }
+  }
+
+  // Toggle between select and view mode
+  const toggleSelectMode = () => {
+    setIsSelectMode(!isSelectMode)
+    if (isSelectMode) {
+      setSelectedImages([]) // Clear selections when leaving select mode
+    }
+  }
+
+  // Merge selected images into a 2x2 grid in a PDF and print it
+  const handlePrint = async () => {
+    if (selectedImages.length !== 4) {
+      alert("Please select exactly 4 images for printing.")
+      return
+    }
+
+    // Generate a 2x2 grid of the images
+    const grid = document.getElementById('image-grid')
+
+    // Use html2canvas to convert the grid to an image
+    const canvas = await html2canvas(grid)
+    const imgData = canvas.toDataURL('image/png')
+
+    // Generate a PDF and add the image
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4'
+    })
+
+    // Add the grid image to the PDF (centered on the page)
+    pdf.addImage(imgData, 'PNG', 20, 20, 555, 555)
+
+    // Print the PDF
+    pdf.autoPrint()
+    window.open(pdf.output('bloburl'))
+  }
+
   return (
     <div className="flex flex-col items-center mt-2 w-full">
       <div className="flex justify-between items-center w-full max-w-screen-lg">
         <p className="text-xl">Gallery</p>
-        <div className="flex space-x-3">
-          <button className="btn bg-blue-500 px-2 py-1 text-white rounded-sm">Save</button>
-          <button className="btn bg-red-500 px-2 py-1 text-white rounded-sm">Print</button>
+        <div className="flex space-x-4">
+          <button onClick={toggleSelectMode} className="btn">
+            {isSelectMode ? 'Cancel Select' : 'Select'}
+          </button>
+          <button onClick={handlePrint} className="btn" disabled={!isSelectMode || selectedImages.length !== 4}>
+            Print
+          </button>
         </div>
       </div>
+
+      {/* Grid for displaying selected images */}
+      {isSelectMode && (
+        <div id="image-grid" className="grid grid-cols-2 gap-3 mt-4 w-full max-w-lg">
+          {selectedImages.map((image, index) => (
+            <div key={index} className="w-full h-auto">
+              <img src={image} alt={`Selected ${index + 1}`} className="w-full h-auto" />
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-4 gap-3 mt-4 w-full max-w-screen-lg">
         {galleryImages.map((image, index) => (
-          <div key={index} className="w-full h-auto rounded-lg">
+          <div
+            key={index}
+            onClick={() => handleImageClick(image)}
+            className={`w-full h-auto rounded-lg cursor-pointer ${selectedImages.includes(image) ? 'border-4 border-blue-500' : ''}`}
+          >
             <img src={image} alt={`Captured ${index + 1}`} className="w-full h-auto rounded-lg" />
           </div>
         ))}
       </div>
+
+      {/* Modal for viewing the clicked image */}
+      {currentImage && !isSelectMode && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+          <div className="relative">
+            <img src={currentImage} alt="Full view" className="max-w-full max-h-full" />
+            <button
+              onClick={() => setCurrentImage(null)}
+              className="absolute top-2 right-2 bg-white text-black p-2 rounded-full"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
