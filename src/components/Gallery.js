@@ -33,10 +33,10 @@ const Gallery = ({ galleryImages }) => {
 
   // Toggle between select and view mode
   const toggleSelectMode = () => {
-    setIsSelectMode(!isSelectMode)
     if (!isSelectMode) {
       setSelectedImages([]) // Clear selections when entering select mode
     }
+    setIsSelectMode(!isSelectMode);
   }
 
   // Merge selected images into a 2x2 grid in a PDF and print it
@@ -87,7 +87,7 @@ const Gallery = ({ galleryImages }) => {
           <div
             key={index}
             onClick={() => handleImageClick(image)}
-            className={`w-full h-auto rounded-lg cursor-pointer ${selectedImages.includes(image) ? 'border-4 border-blue-500' : ''}`}
+            className={`w-full h-auto rounded-lg cursor-pointer ${isSelectMode &&  selectedImages.includes(image) ? 'border-4 border-blue-500' : ''}`}
           >
             <img src={image} alt={`Captured ${index + 1}`} className="w-full h-auto rounded-lg" />
           </div>
