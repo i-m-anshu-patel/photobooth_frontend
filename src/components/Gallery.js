@@ -74,10 +74,10 @@ const Gallery = ({ galleryImages }) => {
       <div className="flex justify-between items-center w-full max-w-screen-lg">
         <p className="text-xl">Gallery</p>
         <div className="flex space-x-4">
-          <button onClick={toggleSelectMode} className="btn">
-            {isSelectMode ? 'Cancel' : 'Select'}
+          <button onClick={toggleSelectMode} className={`btn px-3 py-1 bg-gray-300 rounded-md  ${isSelectMode ? 'border-2 border-blue-500' : 'border'}`}>
+          Select
           </button>
-          <button onClick={() => setpreviewSelectedImagesModal(true)} className="btn" disabled={!isSelectMode || selectedImages.length < 1}>
+          <button onClick={() => setpreviewSelectedImagesModal(true)} className="btn bg-blue-500 px-3 py-1 text-white rounded-md" disabled={!isSelectMode || selectedImages.length < 1}>
             Preview
           </button>
         </div>

@@ -1,7 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const CameraVIew = ({ setGalleryImages }) => {
   const webcamRef = useRef(null);
@@ -43,7 +41,6 @@ const CameraVIew = ({ setGalleryImages }) => {
 
     if (pictureCount === 4) {
       // Stop the process after 4 pictures
-
       setCapturing(false);
       setGalleryImages((prevImages) => [...images, ...prevImages]);
       setImages([]);
@@ -53,49 +50,39 @@ const CameraVIew = ({ setGalleryImages }) => {
   }, [countdown, capturing, pictureCount]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen space-y-4">
+    <div className="grid grid-cols-2 w-full h-screen gap-4">
       {/* Webcam Display */}
-      <div className="w-full max-w-screen-lg h-auto relative">
+      <div className="w-full h-full flex items-center justify-center relative">
         <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={videoConstraints}
+          className=" object-cover"
         />
-
         {/* Countdown displayed over the webcam */}
         {capturing && (
           <div className="absolute inset-0 flex items-center justify-center">
             <h1 className="text-6xl font-bold text-red-600">
-              {countdown > 0 ? countdown : "Smile!"}
+              {countdown > 0 ? countdown : 'Smile!'}
             </h1>
           </div>
         )}
       </div>
 
-      {/* Capture Button */}
-      {!capturing && (
-        <button
-          onClick={startCountdownAndCapture}
-          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-        >
-          Start Countdown and Capture 4 Pictures
-        </button>
-      )}
-
-      {/* Display Captured Images */}
-      {/* <div className="grid grid-cols-2 gap-4 mt-4 w-full max-w-screen-lg">
-        {images.map((image, index) => (
-          <div key={index} className="w-full h-auto rounded-lg">
-            <img src={image} alt={`Captured ${index + 1}`} className="w-full h-auto rounded-lg" />
-          </div>
-        ))}
-      </div> */}
+      {/* Controls (Capture Button) */}
+      <div className="flex items-center justify-center">
+        {!capturing && (
+          <button
+            onClick={startCountdownAndCapture}
+            className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+          >
+            Click
+          </button>
+        )}
+      </div>
     </div>
   );
 };
 
-
-
-
-export default CameraVIew
+export default CameraVIew;
