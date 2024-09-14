@@ -3,9 +3,11 @@ import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 const Gallery = ({ galleryImages }) => {
-  const [selectedImages, setSelectedImages] = useState([])
-  const [isSelectMode, setIsSelectMode] = useState(false)
-  const [currentImage, setCurrentImage] = useState(null)
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [previewSelectedImagesModal, setpreviewSelectedImagesModal] = useState(false);
+
 
   // Toggle image selection
   const handleSelectImage = (image) => {
@@ -32,8 +34,8 @@ const Gallery = ({ galleryImages }) => {
   // Toggle between select and view mode
   const toggleSelectMode = () => {
     setIsSelectMode(!isSelectMode)
-    if (isSelectMode) {
-      setSelectedImages([]) // Clear selections when leaving select mode
+    if (!isSelectMode) {
+      setSelectedImages([]) // Clear selections when entering select mode
     }
   }
 
@@ -72,24 +74,13 @@ const Gallery = ({ galleryImages }) => {
         <p className="text-xl">Gallery</p>
         <div className="flex space-x-4">
           <button onClick={toggleSelectMode} className="btn">
-            {isSelectMode ? 'Cancel Select' : 'Select'}
+            {isSelectMode ? 'Cancel' : 'Select'}
           </button>
-          <button onClick={handlePrint} className="btn" disabled={!isSelectMode || selectedImages.length !== 4}>
-            Print
+          <button onClick={() => setpreviewSelectedImagesModal(true)} className="btn" disabled={!isSelectMode || selectedImages.length < 1}>
+            Preview
           </button>
         </div>
       </div>
-
-      {/* Grid for displaying selected images */}
-      {isSelectMode && (
-        <div id="image-grid" className="grid grid-cols-2 gap-3 mt-4 w-full max-w-lg">
-          {selectedImages.map((image, index) => (
-            <div key={index} className="w-full h-auto">
-              <img src={image} alt={`Selected ${index + 1}`} className="w-full h-auto" />
-            </div>
-          ))}
-        </div>
-      )}
 
       <div className="grid grid-cols-4 gap-3 mt-4 w-full max-w-screen-lg">
         {galleryImages.map((image, index) => (
@@ -117,6 +108,39 @@ const Gallery = ({ galleryImages }) => {
           </div>
         </div>
       )}
+
+{previewSelectedImagesModal && (
+  <div className='fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40'>
+    <div className="w-1/2 bg-white shadow-lg p-4 transition-transform transform translate-x-0 border z-50">
+      <div className='flex mt-2'>
+        <h2 className="text-lg font-semibold mb-4">Selected Images</h2>
+        <div className='ms-auto '>
+          <button
+            onClick={handlePrint}
+            className="btn bg-red-500 text-white mb-4 mx-2 px-3 py-1 rounded-sm"
+            disabled={!isSelectMode || selectedImages.length !== 4}
+          >
+            Print
+          </button>
+          <button
+            onClick={() => setpreviewSelectedImagesModal(false)}
+            className="btn bg-yellow-500 text-white mb-4 mx-2 px-3 py-1 rounded-sm"
+          >
+            Close Preview
+          </button>
+        </div>
+      </div>
+      <div id="image-grid" className="grid grid-cols-2 gap-3">
+        {selectedImages.map((image, index) => (
+          <div key={index} className="w-full h-auto">
+            <img src={image} alt={`Selected ${index + 1}`} className="w-full h-auto" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }
