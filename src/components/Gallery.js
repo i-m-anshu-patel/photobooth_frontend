@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-import ImagePreviewModal from './ImagePreviewModal' // Import the new modal component
+import ImagePreviewModal from './ImagePreviewModal'
 import SingleImagePreviewModal from './SingleImagePreviewModal'
 
 const Gallery = ({ galleryImages }) => {
@@ -70,48 +70,67 @@ const Gallery = ({ galleryImages }) => {
   }
 
   return (
-    <div className="flex flex-col items-center mt-2 w-full">
-      <div className="flex justify-between items-center w-full max-w-screen-lg">
-        <p className="text-xl">Gallery</p>
-        <div className="flex space-x-4">
-          <button onClick={toggleSelectMode} className={`btn px-3 py-1 bg-gray-300 rounded-md  ${isSelectMode ? 'border-2 border-blue-500' : 'border'}`}>
-          Select
-          </button>
-          <button onClick={() => setpreviewSelectedImagesModal(true)} className="btn bg-blue-500 px-3 py-1 text-white rounded-md" disabled={!isSelectMode || selectedImages.length < 1}>
-            Preview
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 gap-3 mt-4 w-full max-w-screen-lg">
-        {galleryImages.map((image, index) => (
-          <div
-            key={index}
-            onClick={() => handleImageClick(image)}
-            className={`w-full h-auto rounded-lg cursor-pointer ${isSelectMode && selectedImages.includes(image) ? 'border-4 border-blue-500' : ''}`}
-          >
-            <img src={image} alt={`Captured ${index + 1}`} className="w-full h-auto rounded-lg" />
+    <div className="flex flex-col items-center pt-7 w-full">
+      {/* Container box with a modern, card-like design */}
+      <div className="w-full max-w-screen-lg bg-slate-900 bg-opacity-70 shadow-2xl rounded-lg p-8 mb-2 border border-white">
+        <div className="flex justify-between items-center w-full mb-6">
+          <p className="text-3xl text-white font-semibold">Gallery</p>
+          <div className="flex space-x-4">
+            <button
+              onClick={toggleSelectMode}
+              className={`px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-900 text-white rounded-md hover:shadow-lg transition-all ${isSelectMode ? 'border-2 border-blue-500' : 'border-none'}`}
+            >
+              {isSelectMode ? 'Cancel Selection' : 'Select'}
+            </button>
+            <button
+              onClick={() => setpreviewSelectedImagesModal(true)}
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-md hover:shadow-lg transition-all"
+              disabled={!isSelectMode || selectedImages.length < 1}
+            >
+              Preview
+            </button>
           </div>
-        ))}
+        </div>
+
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-4 gap-6">
+          {galleryImages.map((image, index) => (
+            <div
+              key={index}
+              onClick={() => handleImageClick(image)}
+              className={`relative w-full h-auto rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-xl hover:scale-105 duration-200 ${
+                isSelectMode && selectedImages.includes(image)
+                  ? 'border-4 border-blue-500'
+                  : 'border border-white'
+              }`}
+            >
+              <img
+                src={image}
+                alt={`Captured ${index + 1}`}
+                className="w-full h-auto rounded-lg object-cover"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Modal for viewing the clicked image */}
+        {currentImage && !isSelectMode && (
+          <SingleImagePreviewModal
+            currentImage={currentImage}
+            setCurrentImage={setCurrentImage}
+          />
+        )}
+
+        {/* Preview Selected Images Modal */}
+        {previewSelectedImagesModal && (
+          <ImagePreviewModal
+            selectedImages={selectedImages}
+            isSelectMode={isSelectMode}
+            handlePrint={handlePrint}
+            onClose={() => setpreviewSelectedImagesModal(false)}
+          />
+        )}
       </div>
-
-      {/* Modal for viewing the clicked image */}
-      {currentImage && !isSelectMode && (
-       <SingleImagePreviewModal 
-       currentImage={currentImage} 
-       setCurrentImage={setCurrentImage} 
-       />
-      )}
-
-      {/* Preview Selected Images Modal */}
-      {previewSelectedImagesModal && (
-        <ImagePreviewModal
-          selectedImages={selectedImages}
-          isSelectMode={isSelectMode}
-          handlePrint={handlePrint}
-          onClose={() => setpreviewSelectedImagesModal(false)}
-        />
-      )}
     </div>
   )
 }
