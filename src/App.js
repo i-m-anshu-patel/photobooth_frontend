@@ -12,13 +12,11 @@ function App() {
     <>
       <BrowserRouter>
         <Header />
-        <div className='pt-3 '>
           <Routes>
             <Route exact path='/' element={<Login />} />
             <Route exact path='/gallery' element={<Gallery galleryImages={galleryImages} />} />
             <Route exact path='/camera' element={<CameraVIew setGalleryImages={setGalleryImages} />} />
           </Routes>
-        </div>
       </BrowserRouter>
     </>
   );
