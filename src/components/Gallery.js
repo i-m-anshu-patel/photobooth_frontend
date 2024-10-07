@@ -70,7 +70,7 @@ const Gallery = ({ galleryImages }) => {
   }
 
   return (
-    <div className="flex flex-col items-center pt-7 w-full">
+    <div className="flex flex-col items-center pt-7 w-full min-h-screen">
       {/* Container box with a modern, card-like design */}
       <div className="w-full max-w-screen-lg bg-slate-900 bg-opacity-70 shadow-2xl rounded-lg p-8 mb-2 border border-white">
         <div className="flex justify-between items-center w-full mb-6">
