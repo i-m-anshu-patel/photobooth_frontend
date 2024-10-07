@@ -22,7 +22,7 @@ const Login = () => {
   }
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gray-100'>
+    <div className='flex items-center justify-center min-h-screen '>
       <div className='w-full max-w-md bg-white shadow-md rounded-lg p-8'>
         <h3 className='text-2xl font-bold mb-6 text-center'>{signUpMode ? 'Sign Up' : 'Login'}</h3>
         <form onSubmit={handleSubmit}>
