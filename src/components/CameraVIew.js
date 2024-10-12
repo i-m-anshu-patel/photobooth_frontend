@@ -1,5 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import ImagePreviewModal from './ImagePreviewModal';
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 const CameraVIew = ({ setGalleryImages }) => {
   const webcamRef = useRef(null);
@@ -7,15 +10,40 @@ const CameraVIew = ({ setGalleryImages }) => {
   const [capturing, setCapturing] = useState(false); // Capturing status
   const [images, setImages] = useState([]); // Store captured images
   const [pictureCount, setPictureCount] = useState(0); // Count the number of pictures taken
+  const [imagePreviewModalMode, setImagePreviewModalMode] = useState(false);
 
   const videoConstraints = {
     facingMode: 'user', // 'environment' for back camera
   };
 
+  // Merge selected images into a 2x2 grid in a PDF and print it
+  const handlePrint = async () => {
+    // Generate a 2x2 grid of the images
+    const grid = document.getElementById('image-grid')
+
+    // Use html2canvas to convert the grid to an image
+    const canvas = await html2canvas(grid)
+    const imgData = canvas.toDataURL('image/png')
+
+    // Generate a PDF and add the image
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4'
+    })
+
+    // Add the grid image to the PDF (centered on the page)
+    pdf.addImage(imgData, 'PNG', 20, 20, 555, 555)
+
+    // Print the PDF
+    pdf.autoPrint()
+    window.open(pdf.output('bloburl'))
+  }
+
   // Capture a single picture
   const capture = (sequence) => {
     const imageSrc = webcamRef.current.getScreenshot();
-    const imageWithSequence = {sequenceId: sequence, imageSrc: imageSrc};
+    const imageWithSequence = { sequenceId: sequence, imageSrc: imageSrc };
     setImages((prevImages) => [...prevImages, imageWithSequence]);
   };
 
@@ -43,8 +71,7 @@ const CameraVIew = ({ setGalleryImages }) => {
     if (pictureCount === 4) {
       // Stop the process after 4 pictures
       setCapturing(false);
-      setGalleryImages((prevImages) => [...images, ...prevImages]);
-      setImages([]);
+      setImagePreviewModalMode(true);
     }
 
     return () => clearTimeout(timer); // Clean up the timer
@@ -82,8 +109,17 @@ const CameraVIew = ({ setGalleryImages }) => {
           </button>
         )}
       </div>
+
+      {imagePreviewModalMode && (
+        <ImagePreviewModal
+          selectedImages={images}
+          isSelectMode={true}
+          handlePrint={handlePrint}
+          onClose={() => setImagePreviewModalMode(false)}
+        />
+      )
+      };
     </div>
-  );
-};
+)};
 
 export default CameraVIew;

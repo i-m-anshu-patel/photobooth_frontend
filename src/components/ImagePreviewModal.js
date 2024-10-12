@@ -26,10 +26,10 @@ const ImagePreviewModal = ({ selectedImages, isSelectMode, handlePrint, onClose 
           {selectedImages.map((image, index) => (
             <>
               <div key={index} className="w-full h-auto">
-                <img src={image} alt={`Selected ${index + 1}`} className="w-full h-auto rounded-sm border border-white" />
+                <img src={image.imageSrc} alt={`Selected ${index + 1}`} className="w-full h-auto rounded-sm border border-white" />
               </div>
               <div key={index} className="w-full h-auto">
-                <img src={image} alt={`Selected ${index + 1}`} className="w-full h-auto rounded-sm border border-white" />
+                <img src={image.imageSrc} alt={`Selected ${index + 1}`} className="w-full h-auto rounded-sm border border-white" />
               </div>
             </>
           ))}
