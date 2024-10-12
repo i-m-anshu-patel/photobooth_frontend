@@ -3,9 +3,9 @@ import { Reorder } from "framer-motion";
 
 const Test = () => {
   const [items, setItems] = useState([
-    { id: 1, pic: 'sfwsf' },
-    { id: 2, pic: 'zsfwsf' },
-    { id: 3, pic: 'seyhetg' }
+    { id: 1, pic: "https://via.placeholder.com/150" },
+    { id: 2, pic: "https://via.placeholder.com/150" },
+    { id: 3, pic: "https://via.placeholder.com/150" }
   ]);
   return (
    <div className="text-white">

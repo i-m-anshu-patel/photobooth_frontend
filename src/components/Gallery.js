@@ -43,31 +43,42 @@ const Gallery = ({ galleryImages }) => {
   // Merge selected images into a 2x2 grid in a PDF and print it
   const handlePrint = async () => {
     if (selectedImages.length !== 4) {
-      alert("Please select exactly 4 images for printing.")
-      return
+        alert("Please select exactly 4 images for printing.");
+        return;
     }
 
-    // Generate a 2x2 grid of the images
-    const grid = document.getElementById('image-grid')
+    const grid = document.getElementById('image-grid');
+    const canvas = await html2canvas(grid);
+    const imgData = canvas.toDataURL('image/png');
 
-    // Use html2canvas to convert the grid to an image
-    const canvas = await html2canvas(grid)
-    const imgData = canvas.toDataURL('image/png')
-
-    // Generate a PDF and add the image
     const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: 'a4'
-    })
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4'
+    });
 
-    // Add the grid image to the PDF (centered on the page)
-    pdf.addImage(imgData, 'PNG', 20, 20, 555, 555)
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth; // Use full page width
+    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+    const x = 0; // Align to left edge
+    const y = (pdfHeight - imgHeight) / 2; // Center vertically
 
-    // Print the PDF
-    pdf.autoPrint()
-    window.open(pdf.output('bloburl'))
-  }
+    // Add the image to the PDF
+    pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+
+    // Add text at the bottom of the page
+    const text = "Your Custom Text Here"; // Change this to your desired text
+    const textHeight = 20; // Estimated height of the text in points
+    const textY = pdfHeight - textHeight - 20; // Position 20 points from the bottom
+
+    pdf.setFontSize(12); // Set font size
+    pdf.text(text, 20, textY); // Add text (x, y coordinates)
+
+    pdf.autoPrint();
+    window.open(pdf.output('bloburl'));
+};
+
 
   return (
     <div className="flex flex-col items-center pt-7 w-full min-h-screen">

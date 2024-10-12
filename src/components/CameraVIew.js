@@ -18,27 +18,50 @@ const CameraVIew = ({ setGalleryImages }) => {
 
   // Merge selected images into a 2x2 grid in a PDF and print it
   const handlePrint = async () => {
-    // Generate a 2x2 grid of the images
-    const grid = document.getElementById('image-grid')
+    
 
-    // Use html2canvas to convert the grid to an image
-    const canvas = await html2canvas(grid)
-    const imgData = canvas.toDataURL('image/png')
+    const grid = document.getElementById('image-grid');
+    const canvas = await html2canvas(grid);
+    const imgData = canvas.toDataURL('image/png');
 
-    // Generate a PDF and add the image
     const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: 'a4'
-    })
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4'
+    });
 
-    // Add the grid image to the PDF (centered on the page)
-    pdf.addImage(imgData, 'PNG', 20, 20, 555, 555)
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    // Print the PDF
-    pdf.autoPrint()
-    window.open(pdf.output('bloburl'))
-  }
+    const imgWidth = pdfWidth; // Use full page width
+    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+    // Calculate the new height for the images
+    const spaceForText = imgHeight; // Space needed for text equals the height of the image
+    const adjustedImgHeight = imgHeight - spaceForText; // Reduce the height of the images
+
+    const x = 0; // Align to left edge
+    const y = (pdfHeight - adjustedImgHeight) / 2; // Center vertically
+
+    // Add the image to the PDF
+    pdf.addImage(imgData, 'PNG', 20, 20, 555, 555);
+
+    // Add text below the images
+    const text = "Your Text Here"; // Change this to your desired text
+    const textHeight = 12; // Set an approximate height for the text in points
+    const textY = (pdfHeight + adjustedImgHeight) / 2 + 20; // Position 20 points below the images
+
+    const textWidth = pdf.getTextWidth(text); // Get the width of the text
+    const centerX = (pdfWidth - textWidth) / 2;
+    pdf.setFont("Helvetica", "normal");
+    pdf.setFontSize(25); // Set font size
+    pdf.text(text, centerX - 10, 650); // Add text (x, y coordinates)
+
+    pdf.autoPrint();
+    window.open(pdf.output('bloburl'));
+};
+
+
 
   // Capture a single picture
   const capture = (sequence) => {
