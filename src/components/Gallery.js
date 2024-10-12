@@ -97,15 +97,15 @@ const Gallery = ({ galleryImages }) => {
           {galleryImages.map((image, index) => (
             <div
               key={index}
-              onClick={() => handleImageClick(image)}
+              onClick={() => handleImageClick(image.imageSrc)}
               className={`relative w-full h-auto rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-xl hover:scale-105 duration-200 ${
-                isSelectMode && selectedImages.includes(image)
+                isSelectMode && selectedImages.includes(image.imageSrc)
                   ? 'border-4 border-blue-500'
                   : 'border border-white'
               }`}
             >
               <img
-                src={image}
+                src={image.imageSrc}
                 alt={`Captured ${index + 1}`}
                 className="w-full h-auto rounded-lg object-cover"
               />

@@ -13,9 +13,10 @@ const CameraVIew = ({ setGalleryImages }) => {
   };
 
   // Capture a single picture
-  const capture = () => {
+  const capture = (sequence) => {
     const imageSrc = webcamRef.current.getScreenshot();
-    setImages((prevImages) => [...prevImages, imageSrc]);
+    const imageWithSequence = {sequenceId: sequence, imageSrc: imageSrc};
+    setImages((prevImages) => [...prevImages, imageWithSequence]);
   };
 
   // Start the process of taking pictures with countdown
@@ -23,7 +24,7 @@ const CameraVIew = ({ setGalleryImages }) => {
     setImages([]); // Clear previous images
     setPictureCount(0); // Reset the picture count
     setCapturing(true); // Start capturing process
-    setCountdown(3); // Start countdown at 5 seconds
+    setCountdown(3); // Start countdown at 3 seconds
   };
 
   // This effect handles the countdown and capturing
@@ -34,7 +35,7 @@ const CameraVIew = ({ setGalleryImages }) => {
       timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     } else if (countdown === 0 && pictureCount < 4) {
       // Capture picture when countdown reaches 0
-      capture();
+      capture(pictureCount);
       setPictureCount(pictureCount + 1); // Increment picture count
       setCountdown(3); // Reset countdown to 5 for the next picture
     }
@@ -58,7 +59,7 @@ const CameraVIew = ({ setGalleryImages }) => {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={videoConstraints}
-          className=" object-cover"
+          className="object-cover"
         />
         {/* Countdown displayed over the webcam */}
         {capturing && (
