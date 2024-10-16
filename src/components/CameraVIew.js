@@ -27,28 +27,13 @@ const CameraVIew = ({ setGalleryImages }) => {
         unit: 'pt',
         format: 'a4'
     });
-  
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pdfWidth; // Use full page width
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
-
-    // Calculate the new height for the images
-    const spaceForText = imgHeight; // Space needed for text equals the height of the image
-    const adjustedImgHeight = imgHeight - spaceForText; // Reduce the height of the images
-
-    const x = 0; // Align to left edge
-    const y = (pdfHeight - adjustedImgHeight) / 2; // Center vertically
-
     // Add the image to the PDF
     pdf.addImage(imgData, 'PNG', 20, 20, 555, 555);
 
     // Add text below the images
     const text = "Your Text Here"; // Change this to your desired text
-    const textHeight = 12; // Set an approximate height for the text in points
-    const textY = (pdfHeight + adjustedImgHeight) / 2 + 20; // Position 20 points below the images
-
+  
     const textWidth = pdf.getTextWidth(text); // Get the width of the text
     const centerX = (pdfWidth - textWidth) / 2;
     pdf.setFont("Helvetica", "normal");
