@@ -11,6 +11,7 @@ const CameraVIew = ({ setGalleryImages }) => {
   const [images, setImages] = useState([]); // Store captured images
   const [pictureCount, setPictureCount] = useState(0); // Count the number of pictures taken
   const [imagePreviewModalMode, setImagePreviewModalMode] = useState(false);
+  const [filters, setfilters] = useState('');
 
   const videoConstraints = {
     facingMode: 'user', // 'environment' for back camera
@@ -23,9 +24,9 @@ const CameraVIew = ({ setGalleryImages }) => {
     const imgData = canvas.toDataURL('image/png');
 
     const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'pt',
-        format: 'a4'
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4'
     });
     const pdfWidth = pdf.internal.pageSize.getWidth();
     // Add the image to the PDF
@@ -33,7 +34,7 @@ const CameraVIew = ({ setGalleryImages }) => {
 
     // Add text below the images
     const text = "Your Text Here"; // Change this to your desired text
-  
+
     const textWidth = pdf.getTextWidth(text); // Get the width of the text
     const centerX = (pdfWidth - textWidth) / 2;
     pdf.setFont("Helvetica", "normal");
@@ -43,16 +44,40 @@ const CameraVIew = ({ setGalleryImages }) => {
     // Print the PDF
     pdf.autoPrint();
     window.open(pdf.output('bloburl'));
-};
-  
+  };
 
+  const applyFilterToImage = (src, sequence) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.src = src;
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // Convert to black and white
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = avg;     // Red
+        data[i + 1] = avg; // Green
+        data[i + 2] = avg; // Blue
+      }
+      ctx.putImageData(imageData, 0, 0);
+      const imageWithSequence = { sequenceId: sequence, imageSrc: canvas.toDataURL() };
+      setImages((prevImages) => [...prevImages, imageWithSequence]);
+    }
+  }
 
 
   // Capture a single picture
   const capture = (sequence) => {
     const imageSrc = webcamRef.current.getScreenshot();
-    const imageWithSequence = { sequenceId: sequence, imageSrc: imageSrc };
-    setImages((prevImages) => [...prevImages, imageWithSequence]);
+    applyFilterToImage(imageSrc, sequence);
   };
 
   // Start the process of taking pictures with countdown
@@ -128,6 +153,7 @@ const CameraVIew = ({ setGalleryImages }) => {
       )
       };
     </div>
-)};
+  )
+};
 
 export default CameraVIew;
