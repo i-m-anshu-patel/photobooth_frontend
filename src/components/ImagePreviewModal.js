@@ -34,7 +34,7 @@ const ImagePreviewModal = ({ selectedImages, isSelectMode, handlePrint, onClose 
             {items.map((image, index) => (
               <Reorder.Item key={image.sequenceId} value={image}>
                 <div className="w-full h-auto ">
-                  <div className='grid grid-cols-2 gap-3 my-1 px-7 py-4 rounded-md'>
+                  <div className='grid grid-cols-2 gap-3 my-1 px-7 py-4 rounded-md '>
                   
                   <img
                     src={image.imageSrc}

@@ -18,8 +18,6 @@ const CameraVIew = ({ setGalleryImages }) => {
 
   // Merge selected images into a 2x2 grid in a PDF and print it
   const handlePrint = async () => {
-    
-
     const grid = document.getElementById('image-grid');
     const canvas = await html2canvas(grid);
     const imgData = canvas.toDataURL('image/png');
@@ -29,7 +27,7 @@ const CameraVIew = ({ setGalleryImages }) => {
         unit: 'pt',
         format: 'a4'
     });
-
+  
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
@@ -57,9 +55,11 @@ const CameraVIew = ({ setGalleryImages }) => {
     pdf.setFontSize(25); // Set font size
     pdf.text(text, centerX - 10, 650); // Add text (x, y coordinates)
 
+    // Print the PDF
     pdf.autoPrint();
     window.open(pdf.output('bloburl'));
 };
+  
 
 
 
