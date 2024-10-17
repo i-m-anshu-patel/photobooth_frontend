@@ -4,6 +4,7 @@ import ImagePreviewModal from './ImagePreviewModal';
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
+
 const CameraVIew = ({ setGalleryImages }) => {
   const webcamRef = useRef(null);
   const [countdown, setCountdown] = useState(3); // Countdown state starting from 5
@@ -11,7 +12,7 @@ const CameraVIew = ({ setGalleryImages }) => {
   const [images, setImages] = useState([]); // Store captured images
   const [pictureCount, setPictureCount] = useState(0); // Count the number of pictures taken
   const [imagePreviewModalMode, setImagePreviewModalMode] = useState(false);
-  const [filters, setfilters] = useState('');
+  const [filters, setfilters] = useState('pixelate');
 
   const videoConstraints = {
     facingMode: 'user', // 'environment' for back camera
@@ -60,13 +61,80 @@ const CameraVIew = ({ setGalleryImages }) => {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // Convert to black and white
-      for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        data[i] = avg;     // Red
-        data[i + 1] = avg; // Green
-        data[i + 2] = avg; // Blue
+      switch (filters) {
+        case 'grayscale':
+          for (let i = 0; i < data.length; i += 4) {
+            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            data[i] = avg;     // Red
+            data[i + 1] = avg; // Green
+            data[i + 2] = avg; // Blue
+          }
+          break;
+
+        case 'sepia':
+          for (let i = 0; i < data.length; i += 4) {
+            const tr = 0.393 * data[i] + 0.769 * data[i + 1] + 0.189 * data[i + 2];
+            const tg = 0.349 * data[i] + 0.686 * data[i + 1] + 0.168 * data[i + 2];
+            const tb = 0.272 * data[i] + 0.534 * data[i + 1] + 0.131 * data[i + 2];
+            data[i] = tr > 255 ? 255 : tr; // Red
+            data[i + 1] = tg > 255 ? 255 : tg; // Green
+            data[i + 2] = tb > 255 ? 255 : tb; // Blue
+          }
+          break;
+
+        case 'brighten':
+          const brightnessFactor = 50; // Adjust as needed
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = Math.min(data[i] + brightnessFactor, 255);
+            data[i + 1] = Math.min(data[i + 1] + brightnessFactor, 255);
+            data[i + 2] = Math.min(data[i + 2] + brightnessFactor, 255);
+          }
+          break;
+
+        case 'darken':
+          const darkenFactor = 50; // Adjust as needed
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = Math.max(data[i] - darkenFactor, 0);
+            data[i + 1] = Math.max(data[i + 1] - darkenFactor, 0);
+            data[i + 2] = Math.max(data[i + 2] - darkenFactor, 0);
+          }
+          break;
+
+        case 'contrast':
+          const contrastFactor = 1.5; // Adjust for more or less contrast
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = ((data[i] - 128) * contrastFactor) + 128;
+            data[i + 1] = ((data[i + 1] - 128) * contrastFactor) + 128;
+            data[i + 2] = ((data[i + 2] - 128) * contrastFactor) + 128;
+          }
+          break;
+
+        case 'saturation':
+          const saturationFactor = 1.5; // Adjust for more or less saturation
+          for (let i = 0; i < data.length; i += 4) {
+            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            data[i] += (data[i] - avg) * saturationFactor; // Red
+            data[i + 1] += (data[i + 1] - avg) * saturationFactor; // Green
+            data[i + 2] += (data[i + 2] - avg) * saturationFactor; // Blue
+          }
+          break;
+
+        case 'pixelate':
+          const pixelationFactor = 10; // Higher number = more pixelation
+          const pixelatedCanvas = document.createElement('canvas');
+          const pixelatedCtx = pixelatedCanvas.getContext('2d');
+          pixelatedCanvas.width = canvas.width / pixelationFactor;
+          pixelatedCanvas.height = canvas.height / pixelationFactor;
+
+          pixelatedCtx.drawImage(canvas, 0, 0, pixelatedCanvas.width, pixelatedCanvas.height);
+          pixelatedCtx.drawImage(pixelatedCanvas, 0, 0, pixelatedCanvas.width, pixelatedCanvas.height, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(pixelatedCanvas, 0, 0);
+          break;
+
+        default:
+          break;
       }
+     
       ctx.putImageData(imageData, 0, 0);
       const imageWithSequence = { sequenceId: sequence, imageSrc: canvas.toDataURL() };
       setImages((prevImages) => [...prevImages, imageWithSequence]);
