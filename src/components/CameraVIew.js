@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas'
 import { filterlist } from '../utils/filterlist';
 
 
+
 const CameraVIew = ({ setGalleryImages }) => {
   const webcamRef = useRef(null);
   const [countdown, setCountdown] = useState(3); // Countdown state starting from 5
@@ -182,15 +183,18 @@ const CameraVIew = ({ setGalleryImages }) => {
 
   return (
     <div className="grid grid-cols-2 w-full h-screen gap-4">
-      {/* Webcam Display */}
-      <div className="w-full h-full flex items-center justify-center ">
+    {/* Webcam Display */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* Wrap the Webcam and countdown in the relative div */}
+      <div className="relative w-full h-full flex items-center justify-center">
         <Webcam
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={videoConstraints}
-          className={"object-cover " + filterClassname}
+          className={"object-cover border-2 border-white " + filterClassname}
         />
+  
         {/* Countdown displayed over the webcam */}
         {capturing && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -199,45 +203,47 @@ const CameraVIew = ({ setGalleryImages }) => {
             </h1>
           </div>
         )}
+  
       </div>
-
-      {/* Controls (Capture Button) */}
-      <div className="grid grid-rows-2 gap-2">
-        <div className='grid grid-cols-4 gap-3 mt-7'>
-          {filterlist.map((filter) => (
-            <div className='flex flex-col'>
-              <div className={ filter.name === filters ? 'border-2 border-white' : ''}
-               onClick={() => {
+    </div>
+  
+    {/* Controls (Capture Button) */}
+    <div className="grid grid-rows-2 gap-2">
+      <div className="grid grid-cols-4 gap-3 mt-14">
+        {filterlist.map((filter) => (
+          <div className="flex flex-col">
+            <div
+              className={filter.name === filters ? 'border-2 border-white' : ''}
+              onClick={() => {
                 setfilters(filter.name);
                 setFilterClassname(filter.className);
-              }}>
-              <img src='filterImage.jpg' alt='filterImage' className={`w-full `+ filter.className}/>
-              <p className='text-md text-center text-white capitalize'>{filter.name}</p>
-              </div>
+              }}
+            >
+              <img src="filterImage.jpg" alt="filterImage" className={`w-full ` + filter.className} />
+              <p className="text-md text-center text-white capitalize">{filter.name}</p>
             </div>
-          ))}
-          
-        </div>
-        <div className='flex justify-center items-center'>
-          <button
-            onClick={startCountdownAndCapture}
-            className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-          >
-            Click
-          </button>
-        </div>
+          </div>
+        ))}
       </div>
-
-      {imagePreviewModalMode && (
-        <ImagePreviewModal
-          selectedImages={images}
-          isSelectMode={true}
-          handlePrint={handlePrint}
-          onClose={() => setImagePreviewModalMode(false)}
-        />
-      )
-      };
+      <div className="flex justify-center items-center">
+        <button
+          onClick={startCountdownAndCapture}
+          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+        >
+          Click
+        </button>
+      </div>
     </div>
+  
+    {imagePreviewModalMode && (
+      <ImagePreviewModal
+        selectedImages={images}
+        isSelectMode={true}
+        handlePrint={handlePrint}
+        onClose={() => setImagePreviewModalMode(false)}
+      />
+    )}
+  </div>  
   )
 };
 
