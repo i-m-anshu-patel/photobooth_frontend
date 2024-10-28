@@ -4,10 +4,9 @@ import CameraVIew from './components/CameraVIew';
 import Header from './components/Header';
 import Login from './components/Login';
 import Test from './components/Test'
-import { useState } from 'react';
+import Admin from './components/Admin';
 
 function App() {
-  const [galleryImages, setGalleryImages] = useState([]);
   return (
     <>
       <BrowserRouter>
@@ -16,6 +15,7 @@ function App() {
           <Routes>
             <Route exact path='/' element={<Login />} />
             <Route exact path='/camera' element={<CameraVIew />} />
+            <Route exact path='/admin' element={<Admin />} />
             <Route exact path='/test' element={<Test />} />
           </Routes>
         </div>

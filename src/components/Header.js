@@ -11,8 +11,8 @@ const Header = () => {
         <Link to='/camera' className='hover:text-yellow-400 transition duration-300'>
           <p className='text-lg font-medium text-white drop-shadow-md'>Camera</p>
         </Link>
-        <Link to='/gallery' className='hover:text-yellow-400 transition duration-300'>
-          <p className='text-lg font-medium text-white drop-shadow-md'>Gallery</p>
+        <Link to='/admin' className='hover:text-yellow-400 transition duration-300'>
+          <p className='text-lg font-medium text-white drop-shadow-md'>Admin</p>
         </Link>
       </div>
     </div>
