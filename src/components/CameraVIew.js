@@ -7,7 +7,7 @@ import { filterlist } from '../utils/filterlist';
 
 
 
-const CameraVIew = ({ setGalleryImages }) => {
+const CameraVIew = () => {
   const webcamRef = useRef(null);
   const [countdown, setCountdown] = useState(3); // Countdown state starting from 5
   const [capturing, setCapturing] = useState(false); // Capturing status
