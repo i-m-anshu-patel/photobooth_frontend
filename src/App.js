@@ -5,21 +5,24 @@ import Header from './components/Header';
 import Login from './components/Login';
 import Test from './components/Test'
 import Admin from './components/Admin';
+import { Provider } from 'react-redux';
+import appStore from './utils/redux/appStore';
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Header />
-        <div className='bg-gray-900 min-h-screen'>
-          <Routes>
-            <Route exact path='/' element={<Login />} />
-            <Route exact path='/camera' element={<CameraVIew />} />
-            <Route exact path='/admin' element={<Admin />} />
-            <Route exact path='/test' element={<Test />} />
-          </Routes>
-        </div>
-
+        <Provider store={appStore}>
+          <Header />
+          <div className='bg-gray-900 min-h-screen'>
+            <Routes>
+              <Route exact path='/' element={<Login />} />
+              <Route exact path='/camera' element={<CameraVIew />} />
+              <Route exact path='/admin' element={<Admin />} />
+              <Route exact path='/test' element={<Test />} />
+            </Routes>
+          </div>
+        </Provider>
       </BrowserRouter>
     </>
   );

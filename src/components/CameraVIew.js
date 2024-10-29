@@ -4,6 +4,8 @@ import ImagePreviewModal from './ImagePreviewModal';
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { filterlist } from '../utils/filterlist';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -16,7 +18,20 @@ const CameraVIew = () => {
   const [imagePreviewModalMode, setImagePreviewModalMode] = useState(false);
   const [filters, setfilters] = useState('None');
   const [filterClassname, setFilterClassname] = useState('');
+  const userData = useSelector((store) => store.user.user);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!userData) {
+      return navigate('/');
+    }
+    else{
+      if(!userData.payment_status){
+        return navigate('/admin');
+      }
+      
+    }
+  })
   const videoConstraints = {
     facingMode: 'user', // 'environment' for back camera
   };
@@ -37,7 +52,7 @@ const CameraVIew = () => {
     pdf.addImage(imgData, 'PNG', 20, 20, 555, 555);
 
     // Add text below the images
-    const text = "Your Text Here"; // Change this to your desired text
+    const text = "Special One"; // Change this to your desired text
 
     const textWidth = pdf.getTextWidth(text); // Get the width of the text
     const centerX = (pdfWidth - textWidth) / 2;
@@ -183,67 +198,67 @@ const CameraVIew = () => {
 
   return (
     <div className="grid grid-cols-2 w-full h-screen gap-4">
-    {/* Webcam Display */}
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* Wrap the Webcam and countdown in the relative div */}
+      {/* Webcam Display */}
       <div className="relative w-full h-full flex items-center justify-center">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          videoConstraints={videoConstraints}
-          className={"object-cover border-2 border-white " + filterClassname}
-        />
-  
-        {/* Countdown displayed over the webcam */}
-        {capturing && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <h1 className="text-6xl font-bold text-red-600">
-              {countdown > 0 ? countdown : 'Smile!'}
-            </h1>
-          </div>
-        )}
-  
-      </div>
-    </div>
-  
-    {/* Controls (Capture Button) */}
-    <div className="grid grid-rows-2 gap-2">
-      <div className="grid grid-cols-4 gap-3 mt-14">
-        {filterlist.map((filter) => (
-          <div className="flex flex-col">
-            <div
-              className={filter.name === filters ? 'border-2 border-white' : ''}
-              onClick={() => {
-                setfilters(filter.name);
-                setFilterClassname(filter.className);
-              }}
-            >
-              <img src="filterImage.jpg" alt="filterImage" className={`w-full ` + filter.className} />
-              <p className="text-md text-center text-white capitalize">{filter.name}</p>
+        {/* Wrap the Webcam and countdown in the relative div */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            videoConstraints={videoConstraints}
+            className={"object-cover border-2 border-white " + filterClassname}
+          />
+
+          {/* Countdown displayed over the webcam */}
+          {capturing && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <h1 className="text-6xl font-bold text-red-600">
+                {countdown > 0 ? countdown : 'Smile!'}
+              </h1>
             </div>
-          </div>
-        ))}
+          )}
+
+        </div>
       </div>
-      <div className="flex justify-center items-center">
-        <button
-          onClick={startCountdownAndCapture}
-          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-        >
-          Click
-        </button>
+
+      {/* Controls (Capture Button) */}
+      <div className="grid grid-rows-2 gap-2">
+        <div className="grid grid-cols-4 gap-3 mt-14">
+          {filterlist.map((filter, index) => (
+            <div className="flex flex-col" key={index}>
+              <div
+                className={filter.name === filters ? 'border-2 border-white' : ''}
+                onClick={() => {
+                  setfilters(filter.name);
+                  setFilterClassname(filter.className);
+                }}
+              >
+                <img src="filterImage.jpg" alt="filterImage" className={`w-full ` + filter.className} />
+                <p className="text-md text-center text-white capitalize">{filter.name}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-center items-center">
+          <button
+            onClick={startCountdownAndCapture}
+            className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+          >
+            Click
+          </button>
+        </div>
       </div>
+
+      {imagePreviewModalMode && (
+        <ImagePreviewModal
+          selectedImages={images}
+          isSelectMode={true}
+          handlePrint={handlePrint}
+          onClose={() => setImagePreviewModalMode(false)}
+        />
+      )}
     </div>
-  
-    {imagePreviewModalMode && (
-      <ImagePreviewModal
-        selectedImages={images}
-        isSelectMode={true}
-        handlePrint={handlePrint}
-        onClose={() => setImagePreviewModalMode(false)}
-      />
-    )}
-  </div>  
   )
 };
 

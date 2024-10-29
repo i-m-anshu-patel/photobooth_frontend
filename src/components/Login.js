@@ -1,15 +1,70 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { signIn } from '../utils/redux/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [signUpMode, setSignUpMode] = useState(false);
+  const userData = useSelector((store) => store.user.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("email: ", email);
-    console.log("password: ", password);
+
+    if (!signUpMode) {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        "email": email,
+        "password": password
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      };
+
+      fetch("http://localhost:5000/auth/signin", requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          dispatch(signIn(result.userData));
+          return navigate('/camera');
+        })
+        .catch((error) => { console.error(error) });
+    }
+
+    if (signUpMode) {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        "name": username,
+        "email": email,
+        "password": password
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      };
+
+      fetch("http://localhost:5000/auth/createUser", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        dispatch(signIn(result.userData));
+        return navigate('/camera');
+      })
+        .catch((error) => console.error(error));
+    }
   }
 
   const toggleSignUpMode = () => {
