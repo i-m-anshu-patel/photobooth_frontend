@@ -27,7 +27,7 @@ const CameraVIew = () => {
     }
     else{
       if(!userData.payment_status){
-        return navigate('/admin');
+        return navigate('/settings');
       }
       
     }

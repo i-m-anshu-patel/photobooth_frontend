@@ -31,11 +31,20 @@ const Login = () => {
         redirect: "follow"
       };
 
-      fetch("http://localhost:5000/auth/signin", requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          dispatch(signIn(result.userData));
-          return navigate('/camera');
+      fetch("http://app.fotoautomatica.co/signInUser", requestOptions)
+        .then((response) => {
+          return Promise.all([response.status, response.json()]);
+        })
+        .then(([status ,result]) => {
+          if(status === 200){
+            dispatch(signIn(result.user));
+            alert(result.message);
+            return navigate('/camera');
+          }
+          else{
+            alert(result.message);
+          }
+          
         })
         .catch((error) => { console.error(error) });
     }
@@ -56,14 +65,23 @@ const Login = () => {
         body: raw,
         redirect: "follow"
       };
-
-      fetch("http://localhost:5000/auth/createUser", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        dispatch(signIn(result.userData));
-        return navigate('/camera');
+      
+      fetch("http://app.fotoautomatica.co/createUser", requestOptions)
+      .then((response) => {
+        return Promise.all([response.status, response.json()]);
       })
-        .catch((error) => console.error(error));
+      .then(([status ,result]) => {
+        if(status === 201){
+          dispatch(signIn(result.user));
+          alert(result.message);
+          return navigate('/camera');
+        }
+        else{
+          alert(result.message);
+        }
+        
+      })
+      .catch((error) => { console.error(error) });
     }
   }
 

@@ -18,7 +18,7 @@ function App() {
             <Routes>
               <Route exact path='/' element={<Login />} />
               <Route exact path='/camera' element={<CameraVIew />} />
-              <Route exact path='/admin' element={<Admin />} />
+              <Route exact path='/settings' element={<Admin />} />
               <Route exact path='/test' element={<Test />} />
             </Routes>
           </div>
