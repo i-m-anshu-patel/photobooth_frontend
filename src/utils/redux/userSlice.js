@@ -12,8 +12,13 @@ const userSlice = createSlice({
         },
         signOut: (state) => {
             return { user : null}
+        },
+        updatePaymentStatus: (state, action) => {
+            if (state.user) {
+                state.user.payment_status = action.payload; // Update payment status
+            }
         }
     }
 })
-export const {signIn, signOut} = userSlice.actions;
+export const {signIn, signOut, updatePaymentStatus} = userSlice.actions;
 export default userSlice.reducer;

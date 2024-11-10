@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { signIn } from '../utils/redux/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { BACKEND_URL } from '../utils/constants';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -30,8 +31,8 @@ const Login = () => {
         body: raw,
         redirect: "follow"
       };
-
-      fetch("http://app.fotoautomatica.co/signInUser", requestOptions)
+      const url = BACKEND_URL+'/signInUser';
+      fetch(url, requestOptions)
         .then((response) => {
           return Promise.all([response.status, response.json()]);
         })
@@ -65,8 +66,8 @@ const Login = () => {
         body: raw,
         redirect: "follow"
       };
-      
-      fetch("http://app.fotoautomatica.co/createUser", requestOptions)
+      const url = BACKEND_URL+'/createUser';
+      fetch(url, requestOptions)
       .then((response) => {
         return Promise.all([response.status, response.json()]);
       })
