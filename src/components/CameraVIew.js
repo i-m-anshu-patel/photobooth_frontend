@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import ImagePreviewModal from './ImagePreviewModal';
 import jsPDF from 'jspdf'
@@ -23,15 +23,12 @@ const CameraVIew = () => {
 
   useEffect(() => {
     if (!userData) {
-      return navigate('/');
+      navigate('/');
+    } else if (!userData.payment_status) {
+      navigate('/settings');
     }
-    else{
-      if(!userData.payment_status){
-        return navigate('/settings');
-      }
-      
-    }
-  })
+  }, [userData, navigate]);
+  
   const videoConstraints = {
     facingMode: 'user', // 'environment' for back camera
   };
@@ -40,6 +37,7 @@ const CameraVIew = () => {
   const handlePrint = async () => {
     const grid = document.getElementById('image-grid');
     const canvas = await html2canvas(grid);
+    
     const imgData = canvas.toDataURL('image/png');
 
     const pdf = new jsPDF({
@@ -48,8 +46,7 @@ const CameraVIew = () => {
       format: 'a4'
     });
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    // Add the image to the PDF
-    pdf.addImage(imgData, 'PNG', 20, 20, 555, 555);
+    pdf.addImage(imgData, 'PNG', 20, 20, 555, 650);
 
     // Add text below the images
     const text = "Special One"; // Change this to your desired text
@@ -58,14 +55,14 @@ const CameraVIew = () => {
     const centerX = (pdfWidth - textWidth) / 2;
     pdf.setFont("Helvetica", "normal");
     pdf.setFontSize(25); // Set font size
-    pdf.text(text, centerX - 10, 650); // Add text (x, y coordinates)
+    pdf.text(text, centerX, 750);
 
     // Print the PDF
     pdf.autoPrint();
     window.open(pdf.output('bloburl'));
   };
 
-  const applyFilterToImage = (src, sequence) => {
+  const applyFilterToImage = useCallback((src, sequence) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
@@ -157,14 +154,14 @@ const CameraVIew = () => {
       const imageWithSequence = { sequenceId: sequence, imageSrc: canvas.toDataURL() };
       setImages((prevImages) => [...prevImages, imageWithSequence]);
     }
-  }
+  }, [filters]);
 
 
-  // Capture a single picture
-  const capture = (sequence) => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    applyFilterToImage(imageSrc, sequence);
-  };
+ // Memoizing capture function to avoid unnecessary re-renders
+ const capture = useCallback((sequence) => {
+  const imageSrc = webcamRef.current.getScreenshot();
+  applyFilterToImage(imageSrc, sequence);
+}, [applyFilterToImage]);
 
   // Start the process of taking pictures with countdown
   const startCountdownAndCapture = () => {
@@ -194,7 +191,7 @@ const CameraVIew = () => {
     }
 
     return () => clearTimeout(timer); // Clean up the timer
-  }, [countdown, capturing, pictureCount]);
+  }, [countdown, capturing, pictureCount, capture]);
 
   return (
     <div className="grid grid-cols-2 w-full h-screen gap-4">
