@@ -3,7 +3,6 @@ import Webcam from "react-webcam";
 import ImagePreviewModal from "./ImagePreviewModal";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { filterlist } from "../utils/filterlist";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FilterModal from "./FilterModal";
@@ -221,20 +220,18 @@ const CameraVIew = () => {
   }, [countdown, capturing, pictureCount, capture]);
 
   return (
-    <div className="w-full min-h-screen relative">
+    <div>
       {/* Webcam Display */}
-      <div>
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          videoConstraints={videoConstraints}
-          className={
-            "absolute top-0 sm:w-full md:w-11/12 md:ms-14 h-[85%] object-cover border-2 border-white " +
-            filterClassname
-          }
-        />
-      </div>
+      <Webcam
+        audio={false}
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        videoConstraints={videoConstraints}
+        className={
+          " sm:w-11/12 md:w-7/12 md:ms-auto md:me-auto md:h-screen sm:h-1/2 border-2 border-white " +
+          filterClassname
+        }
+      />
       {/* Countdown displayed over the webcam */}
       {capturing && (
         <div className="absolute inset-0 flex items-center justify-center">
@@ -245,7 +242,7 @@ const CameraVIew = () => {
       )}
 
       {/* Footer for Capture and Filter Buttons */}
-      <div className="absolute bottom-0 left-0 w-full h-[15%] flex justify-center items-center p-4 sm:p-2 md:p-4 z-40">
+      <div className="sm:absolute sm:bottom-0 sm:left-0 w-full flex justify-center items-center p-4 sm:p-2 md:p-4 ">
         <button
           onClick={startCountdownAndCapture}
           className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 mx-2"
