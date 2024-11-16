@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { signIn } from '../utils/redux/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../utils/constants';
@@ -9,7 +9,6 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [signUpMode, setSignUpMode] = useState(false);
-  const userData = useSelector((store) => store.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -97,7 +96,7 @@ const Login = () => {
 
   return (
     <div className='flex items-center justify-center min-h-screen '>
-      <div className='w-full max-w-md bg-white shadow-md rounded-lg p-8'>
+      <div className='w-full max-w-md bg-white shadow-md rounded-lg p-8 '>
         <h3 className='text-2xl font-bold mb-6 text-center'>{signUpMode ? 'Sign Up' : 'Login'}</h3>
         <form onSubmit={handleSubmit}>
           <div className='mb-4'>
