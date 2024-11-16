@@ -45,7 +45,7 @@ const Admin = () => {
 
   return (
     userData && (
-      <div>
+      <div className="min-h-screen">
         <p className="text-center text-3xl text-white pt-2 pb-5">
           User Settings
         </p>
