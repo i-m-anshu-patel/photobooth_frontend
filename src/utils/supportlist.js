@@ -13,7 +13,7 @@ export const supportlist = {
     {
       heading: "Prices",
       content:
-        "We sell 4 pictures and 2 strips for INR 200, additional copies can be provided in the multiples of 2 strips only. ",
+        "We sell 4 pictures and 2 strips for Rs 200 INR, additional copies can be provided in the multiples of 2 strips only. ",
     },
     {
       heading: "Cancellation and Refunds",
@@ -100,7 +100,12 @@ export const supportlist = {
       heading: "For inquiries or bookings, please reach out to us at:",
       content:
         "• Phone: +91 9632031220 \n • Email: photoboothbengaluru@gmail.com \n • Address: Proworks, 235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage, Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038 \n Operating Hours: 11AM to 6PM \n Social Media: @photobooth_bengaluru",
-    }
+    },
+    {
+        heading: "Business Name",
+        content:
+          "Shanmuga Bommannan Ritheshale",
+      }
   ],
 };
 
