@@ -17,8 +17,25 @@ const CameraVIew = () => {
   const [filters, setfilters] = useState("None");
   const [filterClassname, setFilterClassname] = useState("");
   const [filterModalMode, setFilterModalMode] = useState(false);
+  const [webcamHeight, setWebcamHeight] = useState(0);
   const userData = useSelector((store) => store.user.user);
   const navigate = useNavigate();
+
+  const updateWebcamHeight = () => {
+    if (webcamRef.current && webcamRef.current.video) {
+      const rect = webcamRef.current.video.getBoundingClientRect();
+      setWebcamHeight(rect.height);
+    }
+  };
+
+  useEffect(() => {
+    // Update the height on initial render
+    updateWebcamHeight();
+
+    // Update on window resize
+    window.addEventListener("resize", updateWebcamHeight);
+    return () => window.removeEventListener("resize", updateWebcamHeight);
+  }, []);
 
   useEffect(() => {
     if (!userData) {
@@ -57,8 +74,7 @@ const CameraVIew = () => {
     pdf.text(text, centerX, 750);
 
     // Print the PDF
-    pdf.autoPrint();
-    window.open(pdf.output("bloburl"));
+    pdf.save('photos.pdf');
   };
 
   const applyFilterToImage = useCallback(
@@ -210,7 +226,7 @@ const CameraVIew = () => {
       setCountdown(3); // Reset countdown to 5 for the next picture
     }
 
-    if (pictureCount === 4) {
+    if (pictureCount === 4 && images.length === 4) {
       // Stop the process after 4 pictures
       setCapturing(false);
       setImagePreviewModalMode(true);
@@ -220,7 +236,7 @@ const CameraVIew = () => {
   }, [countdown, capturing, pictureCount, capture]);
 
   return (
-    <div>
+    <div className="relative h-screen bg-black">
       {/* Webcam Display */}
       <Webcam
         audio={false}
@@ -228,7 +244,7 @@ const CameraVIew = () => {
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
         className={
-          " sm:w-11/12 md:w-7/12 md:ms-auto md:me-auto md:h-screen sm:h-1/2 border-2 border-white " +
+          "w-full h-full object-cover border-2 border-white " +
           filterClassname
         }
       />
@@ -242,7 +258,12 @@ const CameraVIew = () => {
       )}
 
       {/* Footer for Capture and Filter Buttons */}
-      <div className="sm:absolute sm:bottom-0 sm:left-0 w-full flex justify-center items-center p-4 sm:p-2 md:p-4 ">
+      <div 
+      style={{
+        position: "absolute",
+        top: webcamHeight - 70, // Adjust '70' based on button height and spacing
+      }}
+      className=" w-full flex justify-center items-center p-4 sm:p-2 md:p-4 ">
         <button
           onClick={startCountdownAndCapture}
           className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 mx-2"
