@@ -62,7 +62,7 @@ const CameraVIew = () => {
       format: "a4",
     });
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    pdf.addImage(imgData, "PNG", 20, 20, 555, 650);
+    pdf.addImage(imgData, "PNG", 0, 0, 555, 650);
 
     // Add text below the images
     const text = "Special One"; // Change this to your desired text
@@ -74,7 +74,30 @@ const CameraVIew = () => {
     pdf.text(text, centerX, 750);
 
     // Print the PDF
-    pdf.save('photos.pdf');
+    pdf.autoPrint();
+    const hiddFrame = document.createElement("iframe");
+    hiddFrame.style.position = "fixed";
+    // "visibility: hidden" would trigger safety rules in some browsers like safari，
+    // in which the iframe display in a pretty small size instead of hidden.
+    // here is some little hack ~
+    hiddFrame.style.width = "1px";
+    hiddFrame.style.height = "1px";
+    hiddFrame.style.opacity = "0.01";
+    const isSafari = /^((?!chrome|android).)*safari/i.test(
+      window.navigator.userAgent
+    );
+    if (isSafari) {
+      // fallback in safari
+      hiddFrame.onload = () => {
+        try {
+          hiddFrame.contentWindow.document.execCommand("print", false, null);
+        } catch (e) {
+          hiddFrame.contentWindow.print();
+        }
+      };
+    }
+    hiddFrame.src = pdf.output("bloburl");
+    document.body.appendChild(hiddFrame);
   };
 
   const applyFilterToImage = useCallback(
@@ -229,11 +252,12 @@ const CameraVIew = () => {
     if (pictureCount === 4 && images.length === 4) {
       // Stop the process after 4 pictures
       setCapturing(false);
+      console.log(images);
       setImagePreviewModalMode(true);
     }
 
     return () => clearTimeout(timer); // Clean up the timer
-  }, [countdown, capturing, pictureCount, capture]);
+  }, [countdown, capturing, pictureCount, capture, images]);
 
   return (
     <div className="relative h-screen bg-black">
@@ -244,8 +268,7 @@ const CameraVIew = () => {
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
         className={
-          "w-full h-full object-cover border-2 border-white " +
-          filterClassname
+          "w-full h-full object-cover border-2 border-white " + filterClassname
         }
       />
       {/* Countdown displayed over the webcam */}
@@ -258,12 +281,13 @@ const CameraVIew = () => {
       )}
 
       {/* Footer for Capture and Filter Buttons */}
-      <div 
-      style={{
-        position: "absolute",
-        top: webcamHeight - 70, // Adjust '70' based on button height and spacing
-      }}
-      className=" w-full flex justify-center items-center p-4 sm:p-2 md:p-4 ">
+      <div
+        style={{
+          position: "absolute",
+          top: webcamHeight - 70, // Adjust '70' based on button height and spacing
+        }}
+        className=" w-full flex justify-center items-center p-4 sm:p-2 md:p-4 "
+      >
         <button
           onClick={startCountdownAndCapture}
           className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 mx-2"

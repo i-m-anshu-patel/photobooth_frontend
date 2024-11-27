@@ -1,14 +1,43 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { updatePaymentStatus } from "../utils/redux/userSlice";
+import UserCard from "./UserCard";
 
 const Admin = () => {
+  const [allUsers, setAllUsers] = useState([]);
   const userData = useSelector((store) => store.user.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const fetchAllUsers = () => {
+    const myHeaders = new Headers();
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const url = BACKEND_URL + "/getAllUsers";
+    fetch(url, requestOptions)
+      .then((response) => {
+        return Promise.all([response.status, response.json()]);
+      })
+      .then(([status, result]) => {
+        if (status === 200) {
+          console.log(result.users);
+          setAllUsers(result.users);
+        } else {
+          alert(result.message);
+        }
+      })
+      .catch((error) => console.error(error));
+  };
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
   useEffect(() => {
     if (!userData) {
       return navigate("/");
@@ -18,7 +47,7 @@ const Admin = () => {
   const handleChangePayment = (user_id, payment_status) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    
+
     const raw = JSON.stringify({
       payment_status: !payment_status,
     });
@@ -30,48 +59,32 @@ const Admin = () => {
       redirect: "follow",
     };
 
-    const url = BACKEND_URL+'/updatePaymentStatus/'+user_id;
+    const url = BACKEND_URL + "/updatePaymentStatus/" + user_id;
     fetch(url, requestOptions)
       .then((response) => response.json())
-      .then((result) =>  {
+      .then((result) => {
         alert(result.message);
         dispatch(updatePaymentStatus(!payment_status));
-        if(!payment_status){
-            return navigate('/camera');
+        if (!payment_status) {
+          return navigate("/camera");
         }
-    })
+      })
       .catch((error) => console.error(error));
   };
 
-  return (
-    userData && (
-      <div className="min-h-screen">
-        <p className="text-center text-3xl text-white pt-2 pb-5">
-          User Settings
-        </p>
-        <div className="w-1/2 bg-white ms-auto me-auto p-3 grid grid-cols-2">
-          <div className="border-r-2">Name</div>
-          <div className="px-2">{userData.name}</div>
-          <div className="border-r-2">Email</div>
-          <div className="px-2">{userData.email}</div>
-          <div className="border-r-2">Payment Status</div>
-          <div className="px-2">
-            {userData.payment_status ? "paid" : "not paid"}
-          </div>
-          <div className="col-span-2 flex justify-center py-3 mx-2">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
-              onClick={() => handleChangePayment(userData.id, userData.payment_status)}
-            >
-              Change Payment Status
-            </button>
-            <button className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Change PDF Text
-            </button>
-          </div>
-        </div>
+  return allUsers ? (
+    <div className="min-h-screen">
+      <p className="text-center py-2 text-white text-2xl">Users</p>
+      <div className="grid sm:grid_cols-1 md:grid-cols-4 md:gap-3">
+        {allUsers.map((user) => (
+          <UserCard userData={user} key={user.id}/>
+        ))}
       </div>
-    )
+    </div>
+  ) : (
+    <div className="min-h-screen flex justify-center items-center">
+      Loading...
+    </div>
   );
 };
 
