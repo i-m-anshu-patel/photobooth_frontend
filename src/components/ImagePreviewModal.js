@@ -26,33 +26,24 @@ const ImagePreviewModal = ({ selectedImages, isSelectMode, handlePrint, onClose 
           </div>
         </div>
         <div id="image-grid">
-          <Reorder.Group
-            values={items}
-            // Use 'setItems' to reorder the array based on the new order
-            onReorder={(newOrder) => setItems(newOrder)}
-          >
             {items.map((image, index) => (
-              <Reorder.Item key={image.sequenceId} value={image}>
-                <div className="w-full h-auto ">
-                  <div className='grid grid-cols-2 gap-3 my-1 px-7 py-4 rounded-md '>
+                <div >
+                  <div className='grid grid-cols-2   rounded-md '>
                   
                   <img
                     src={image.imageSrc}
                     alt={`Selected ${index + 1}`}
-                    className="w-full h-auto rounded-sm border border-white"
+                    className="w-full h-full rounded-sm border border-white"
                   />
                   
                   <img
                     src={image.imageSrc}
                     alt={`Selected ${index + 1}`}
-                    className="w-full h-auto rounded-sm border border-white"
+                    className="w-full h-full rounded-sm border border-white"
                   />
                   </div>
-                
                 </div>
-              </Reorder.Item>
             ))}
-          </Reorder.Group>
         </div>
       </div>
     </div>

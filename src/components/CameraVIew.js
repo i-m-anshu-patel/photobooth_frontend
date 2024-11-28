@@ -61,17 +61,16 @@ const CameraVIew = () => {
       unit: "pt",
       format: "a4",
     });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    pdf.addImage(imgData, "PNG", 0, 0, 555, 650);
+    //pdf.addImage(imgData, "PNG", 0, 0, 590, 760)
+    pdf.addImage(imgData, "PNG", 0, 0, 610, 760); //laptop chrome
 
     // Add text below the images
     const text = "Special One"; // Change this to your desired text
-
-    const textWidth = pdf.getTextWidth(text); // Get the width of the text
-    const centerX = (pdfWidth - textWidth) / 2;
+    const secondtext = "Second One";
     pdf.setFont("Helvetica", "normal");
-    pdf.setFontSize(25); // Set font size
-    pdf.text(text, centerX, 750);
+    pdf.setFontSize(18); // Set font size
+    pdf.text(text, 100, 780);
+    pdf.text(secondtext, 380, 780);
 
     // Print the PDF
     pdf.autoPrint();
