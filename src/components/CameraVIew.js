@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import ImagePreviewModal from "./ImagePreviewModal";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FilterModal from "./FilterModal";
@@ -18,6 +17,7 @@ const CameraVIew = () => {
   const [filterClassname, setFilterClassname] = useState("");
   const [filterModalMode, setFilterModalMode] = useState(false);
   const [webcamHeight, setWebcamHeight] = useState(0);
+  const [pagedimensions, setPagedimensions] = useState("Kuch Nahi");
   const userData = useSelector((store) => store.user.user);
   const navigate = useNavigate();
 
@@ -51,41 +51,60 @@ const CameraVIew = () => {
 
   // Merge selected images into a 2x2 grid in a PDF and print it
   const handlePrint = async () => {
-    const grid = document.getElementById("image-grid");
-    const canvas = await html2canvas(grid);
-
-    const imgData = canvas.toDataURL("image/png");
-
+    console.log("aaaa");
     const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "pt",
+      orientation: "p",
+      unit: "px",
       format: "a4",
     });
-    //pdf.addImage(imgData, "PNG", 0, 0, 590, 760)
-    pdf.addImage(imgData, "PNG", 0, 0, 610, 760); //laptop chrome
+    const pageWidth = pdf.internal.pageSize.width;
+    const pageHeight = pdf.internal.pageSize.height;
+    console.log("Page Width:", pageWidth);
+    console.log("Page Height:", pageHeight);
+    const rowPadding = 5; // Space between rows
+    const imageHeight = 150; // Maintain aspect ratio (Golden Ratio as an example)
+    let xOffset = 5; // Left margin
+    let yOffset = 5; // Top margin
+    console.log("ggggg");
+    // Loop through the items and render 4 rows with duplicate images
+    images.forEach((image) => {
+      // Add the first image
+      pdf.addImage(image.imageSrc, "JPEG", xOffset, yOffset, 235, imageHeight);
 
-    // Add text below the images
-    const text = "Special One"; // Change this to your desired text
-    const secondtext = "Second One";
-    pdf.setFont("Helvetica", "normal");
-    pdf.setFontSize(18); // Set font size
-    pdf.text(text, 100, 780);
-    pdf.text(secondtext, 380, 780);
+      pdf.addImage(
+        image.imageSrc,
+        "JPEG",
+        240 + xOffset,
+        yOffset,
+        240,
+        imageHeight
+      );
 
-    // Print the PDF
+      // Move to the next row
+      yOffset += imageHeight + rowPadding;
+    });
+
+    // Add the text row
+    const text = "Width " + pageWidth; // Replace with your actual text
+    const text2 = "Height " + pageHeight;
+    pdf.setFontSize(20);
+    pdf.text(text, 90, 610); // Position for the first text (centered in the first half)
+    pdf.text(text2, 305, 610);
+
+    // Print or save the PDF
     pdf.autoPrint();
-    const hiddFrame = document.createElement("iframe");
-    hiddFrame.style.position = "fixed";
-    // "visibility: hidden" would trigger safety rules in some browsers like safari，
-    // in which the iframe display in a pretty small size instead of hidden.
-    // here is some little hack ~
-    hiddFrame.style.width = "1px";
-    hiddFrame.style.height = "1px";
-    hiddFrame.style.opacity = "0.01";
     const isSafari = /^((?!chrome|android).)*safari/i.test(
       window.navigator.userAgent
     );
     if (isSafari) {
+      const hiddFrame = document.createElement("iframe");
+      hiddFrame.style.position = "fixed";
+      // "visibility: hidden" would trigger safety rules in some browsers like safari，
+      // in which the iframe display in a pretty small size instead of hidden.
+      // here is some little hack ~
+      hiddFrame.style.width = "1px";
+      hiddFrame.style.height = "1px";
+      hiddFrame.style.opacity = "0.01";
       // fallback in safari
       hiddFrame.onload = () => {
         try {
@@ -94,9 +113,14 @@ const CameraVIew = () => {
           hiddFrame.contentWindow.print();
         }
       };
+      hiddFrame.src = pdf.output("bloburl");
+      document.body.appendChild(hiddFrame);
+    } else {
+      // For Chrome Mobile, open in a new tab
+
+      const blobUrl = pdf.output("bloburl");
+      window.open(blobUrl, "_blank");
     }
-    hiddFrame.src = pdf.output("bloburl");
-    document.body.appendChild(hiddFrame);
   };
 
   const applyFilterToImage = useCallback(
@@ -251,7 +275,6 @@ const CameraVIew = () => {
     if (pictureCount === 4 && images.length === 4) {
       // Stop the process after 4 pictures
       setCapturing(false);
-      console.log(images);
       setImagePreviewModalMode(true);
     }
 
