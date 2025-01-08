@@ -17,7 +17,6 @@ const CameraVIew = () => {
   const [filterClassname, setFilterClassname] = useState("");
   const [filterModalMode, setFilterModalMode] = useState(false);
   const [webcamHeight, setWebcamHeight] = useState(0);
-  const [pagedimensions, setPagedimensions] = useState("Kuch Nahi");
   const userData = useSelector((store) => store.user.user);
   const navigate = useNavigate();
 
@@ -49,34 +48,34 @@ const CameraVIew = () => {
     facingMode: "user", // 'environment' for back camera
   };
 
+  const isIPad = () => {
+    const width = window.screen.width;
+    return width < 1000;
+}
   // Merge selected images into a 2x2 grid in a PDF and print it
   const handlePrint = async () => {
-    console.log("aaaa");
+    const isIPadDevice= isIPad();
     const pdf = new jsPDF({
       orientation: "p",
       unit: "px",
       format: "a4",
     });
-    const pageWidth = pdf.internal.pageSize.width;
-    const pageHeight = pdf.internal.pageSize.height;
-    console.log("Page Width:", pageWidth);
-    console.log("Page Height:", pageHeight);
     const rowPadding = 5; // Space between rows
-    const imageHeight = 150; // Maintain aspect ratio (Golden Ratio as an example)
-    let xOffset = 5; // Left margin
+    const imageHeight = !isIPadDevice ? 135 : 145; 
+    const imageWidth = !isIPadDevice ? 220 : 230;
+    let xOffset = !isIPadDevice ? 5 : 10; // Left margin
     let yOffset = 5; // Top margin
-    console.log("ggggg");
     // Loop through the items and render 4 rows with duplicate images
     images.forEach((image) => {
       // Add the first image
-      pdf.addImage(image.imageSrc, "JPEG", xOffset, yOffset, 235, imageHeight);
+      pdf.addImage(image.imageSrc, "JPEG", xOffset, yOffset, imageWidth, imageHeight);
 
       pdf.addImage(
         image.imageSrc,
         "JPEG",
-        240 + xOffset,
+        imageWidth + 5 + xOffset,
         yOffset,
-        240,
+        imageWidth,
         imageHeight
       );
 
@@ -85,14 +84,17 @@ const CameraVIew = () => {
     });
 
     // Add the text row
-    const text = "Width " + pageWidth; // Replace with your actual text
-    const text2 = "Height " + pageHeight;
-    pdf.setFontSize(20);
-    pdf.text(text, 90, 610); // Position for the first text (centered in the first half)
-    pdf.text(text2, 305, 610);
+    const text = "FotoAutomatica"; // Replace with your actual text
+    const text2 = "FotoAutomatica";
+    const textXCoordinate1 = !isIPadDevice ? 80 : 90;
+    const textXCoordinate2 = !isIPadDevice ? 290 : 305;
+    const textYCoordinate = !isIPadDevice ? 585 : 627;
+    pdf.setFontSize(18);
+    pdf.text(text, textXCoordinate1, textYCoordinate); // Position for the first text (centered in the first half)
+    pdf.text(text2, textXCoordinate2, textYCoordinate);
 
     // Print or save the PDF
-    pdf.autoPrint();
+
     const isSafari = /^((?!chrome|android).)*safari/i.test(
       window.navigator.userAgent
     );
@@ -109,17 +111,17 @@ const CameraVIew = () => {
       hiddFrame.onload = () => {
         try {
           hiddFrame.contentWindow.document.execCommand("print", false, null);
-        } catch (e) {
+        } catch (error) {
           hiddFrame.contentWindow.print();
         }
       };
+      pdf.autoPrint();
       hiddFrame.src = pdf.output("bloburl");
       document.body.appendChild(hiddFrame);
     } else {
       // For Chrome Mobile, open in a new tab
 
-      const blobUrl = pdf.output("bloburl");
-      window.open(blobUrl, "_blank");
+      pdf.save("photo-grid.pdf");
     }
   };
 

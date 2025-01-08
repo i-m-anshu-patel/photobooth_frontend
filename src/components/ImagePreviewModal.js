@@ -31,7 +31,7 @@ const ImagePreviewModal = ({
         </div>
         <div id="image-grid">
           {selectedImages.map((image, index) => (
-            <div className="grid grid-cols-2 gap-1 m-0 p-0  rounded-md ">
+            <div className="grid grid-cols-2 gap-2 my-2  rounded-md " key={index}>
               <img
                 src={image.imageSrc}
                 alt={`Selected ${index + 1}`}
